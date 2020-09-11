@@ -1,5 +1,6 @@
 package com.example.wissdom.nfc0603;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -8,16 +9,18 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-public class ShowActivity extends AppCompatActivity {
+public class ShowActivity extends Activity {
 
     private TextView nfcTv;
     private NfcAdapter mAdapter;
@@ -25,16 +28,59 @@ public class ShowActivity extends AppCompatActivity {
     private IntentFilter[] mFilters;
     private String[][] mTechLists;
     private String data;
+    private String string1;
+    private String string2;
+    private String string3;
+    private String string4;
+    private String string5;
+    private String string6;
+    private String string7;
+    private String string8;
+    private String string9;
+    private String string10;
+    private EditText ed1;
+    private EditText ed2;
+    private EditText ed3;
+    private EditText ed4;
+    private EditText ed5;
+    private EditText ed6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
         nfcTv = findViewById(R.id.nfcTv);
+        ed1 = findViewById(R.id.ed1);
+        ed2 = findViewById(R.id.ed2);
+        ed3 = findViewById(R.id.ed3);
+        ed4 = findViewById(R.id.ed4);
+        ed5 = findViewById(R.id.ed5);
+        ed6 = findViewById(R.id.ed6);
         Bundle extras = getIntent().getExtras();
         if (null != extras) {
             data = extras.getString("data");
             nfcTv.setText(data);
+
+            String replace = data.replace("\n", ",");
+            String[] split1 = replace.split(",");
+            Log.e("====>", "onCreate: " + replace);
+            if (split1 != null && split1.length != 0 && split1.length > 7) {
+                string1 = split1[0].trim();
+                string2 = split1[1].trim();
+                string3 = split1[2].trim();
+                string4 = split1[3].trim();
+                string5 = split1[4].trim();
+                string6 = split1[5].trim();
+                string7 = split1[6].trim();
+                string8 = split1[7].trim();
+
+                ed1.setText(string3);
+                ed2.setText(string4);
+                ed3.setText(string5);
+                ed4.setText(string6);
+                ed5.setText(string7);
+                ed6.setText(string8);
+            }
         } else {
             nfcTv.setText("无数据");
         }
@@ -58,25 +104,13 @@ public class ShowActivity extends AppCompatActivity {
 
         //获取Tag对象
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-        String replace = data.replace("\n", ",");
-        Log.e("=====>", "onNewIntent:replace " + replace);
-        String[] split1 = replace.split(",");
-
-        if (split1 != null && split1.length != 0) {
-            String string1 = split1[0].trim();
-            String string2 = split1[1].trim();
-            String string3 = split1[2].trim();
-            String string4 = split1[3].trim();
-            String string5 = split1[4].trim();
-            String string6 = split1[5].trim();
-            String string7 = split1[6].trim();
-            String string8 = split1[7].trim();
-            Log.e("=========>", "onNewIntent: " + "string1:" + string1 + "string2:" + string2 + "string3:" + string3 + "string4:" + string4 + "string5:" + string5 + "string6:" + string6 + "string7:" + string7 + "string8:" + string8);
-        }
-
-        String substring1 = data.substring(1, data.length() - 1);
-        String str = "4" + substring1;
+        String ed1Str = ed1.getText().toString().trim();
+        String ed2Str = ed2.getText().toString().trim();
+        String ed3Str = ed3.getText().toString().trim();
+        String ed4Str = ed4.getText().toString().trim();
+        String ed5Str = ed5.getText().toString().trim();
+        String ed6Str = ed6.getText().toString().trim();
+        String str = ed1Str + "," + ed2Str + "," + ed3Str + "," + ed4Str + "," + ed5Str + "," + ed6Str;
         NdefMessage ndefMessage = new NdefMessage(new NdefRecord[]{createTextRecord(str)});
         boolean result = writeTag(ndefMessage, detectedTag);
         if (result) {

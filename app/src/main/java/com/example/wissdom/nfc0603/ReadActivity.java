@@ -1,5 +1,6 @@
 package com.example.wissdom.nfc0603;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
@@ -10,19 +11,21 @@ import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcV;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.List;
 
-public class ReadActivity extends AppCompatActivity {
+public class ReadActivity extends Activity {
 
     private NfcAdapter mAdapter;
     private IntentFilter[] mFilters;
     private PendingIntent mPendingIntent;
     private String[][] mTechLists;
+    private NdefMessage[] msgs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,35 +118,41 @@ public class ReadActivity extends AppCompatActivity {
         }
     }
 
+
+    Intent intent;
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        NdefMessage[] msgs = NfcUtil.getNdefMsg(intent);
-        if (msgs == null) {
-            Toast.makeText(this, "非NFC启动", Toast.LENGTH_SHORT).show();
-        } else {
-            setNFCMsgView(msgs);
-        }
+        this.intent = intent;
+
     }
 
     private void setNFCMsgView(NdefMessage[] ndefMessages) {
         if (ndefMessages == null || ndefMessages.length == 0) {
             return;
         }
-
-        Calendar calendar = Calendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-
         List<ParsedNdefRecord> records = NdefMessageParser.parse(ndefMessages[0]);
         final int size = records.size();
         for (int i = 0; i < size; i++) {
             ParsedNdefRecord record = records.get(i);
             String viewText = record.getViewText();
-            Intent intent=new Intent(this,ShowActivity.class);
-            intent.putExtra("data",viewText);
+            Intent intent = new Intent(this, ShowActivity.class);
+            intent.putExtra("data", viewText);
             startActivity(intent);
         }
+    }
+
+    public void scanNFC(View view) {
+        if (null!=this.intent){
+            msgs = NfcUtil.getNdefMsg(intent);
+            if (msgs == null) {
+                Toast.makeText(this, "非NFC启动", Toast.LENGTH_SHORT).show();
+            } else {
+                setNFCMsgView(msgs);
+            }
+        }
+
     }
 }
