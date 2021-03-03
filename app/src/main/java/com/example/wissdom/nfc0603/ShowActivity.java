@@ -60,7 +60,6 @@ public class ShowActivity extends Activity {
         if (null != extras) {
             data = extras.getString("data");
             nfcTv.setText(data);
-
             String replace = data.replace("\n", ",");
             String[] split1 = replace.split(",");
             Log.e("====>", "onCreate: " + replace);
